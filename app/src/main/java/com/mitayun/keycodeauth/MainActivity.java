@@ -105,6 +105,71 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
         fileName = fileName + count;
 
+        int count1 = 0;
+        int l = accValues.size();
+        int j = 0;
+        int k = 0;
+        List<String> temp = new ArrayList<>();
+        for (int i = 0; i < l; i++){
+            if (accValues.get(i)=="tag"){
+                if (k == 0) {
+                    k = i;
+                    continue;
+                }else{
+                    temp.clear();
+                    for (int p = j; p < (k + i) / 2; p ++){
+                        if (accValues.get(p)!="tag")
+                            temp.add(accValues.get(p));
+                    }
+                    writeToFile(fileName + count1 + POSTFIX_ACC, temp);
+                    j = (k + i) / 2;
+                    k = i;
+                    count1 ++;
+                }
+            }
+        }
+        if (temp.size()!=0){
+            temp.clear();
+            for (int p = j; p < l; p ++){
+                if (accValues.get(p)!="tag")
+                    temp.add(accValues.get(p));
+            }
+            writeToFile(fileName + count1 + POSTFIX_ACC, temp);
+        }
+
+        count1 = 0;
+        j = 0;
+        k = 0;
+        l = gyroValues.size();
+        temp.clear();
+        for (int i = 0; i < l; i++){
+            if (gyroValues.get(i)=="tag"){
+                if (k == 0) {
+                    k = i;
+                    continue;
+                }else{
+                    temp.clear();
+                    for (int p = j; p < (k + i) / 2; p ++){
+                        if (gyroValues.get(p)!="tag")
+                            temp.add(gyroValues.get(p));
+                    }
+                    writeToFile(fileName + count1 + POSTFIX_GYRO, temp);
+                    j = (k + i) / 2;
+                    k = i;
+                    count1 ++;
+                }
+            }
+        }
+        if (temp.size()!=0){
+            temp.clear();
+            for (int p = j; p < l; p ++){
+                if (gyroValues.get(p)!="tag")
+                    temp.add(gyroValues.get(p));
+            }
+            writeToFile(fileName + count1 + POSTFIX_GYRO, temp);
+        }
+
+
         writeToFile(fileName + POSTFIX_ACC, accValues);
         writeToFile(fileName + POSTFIX_GYRO, gyroValues);
         writeToFile(fileName + POSTFIX_POS, positionValues);
@@ -184,9 +249,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         if (event.getAction() == MotionEvent.ACTION_DOWN && started) {
             Point p = getRelativePosition(boundView, event);
             String result = "pos," + event.getEventTime() + "," + p.x + "," + p.y + "\n";
+            String tag = "tag";
             Log.d(TAG, "onTouch: " + result);
             positionValues.add(result);
             allValues.add(result);
+            accValues.add(tag);
+            gyroValues.add(tag);
             Log.d(TAG, "totalPos: " + positionValues.size());
         }
         return false;
